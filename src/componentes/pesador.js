@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Grid, Box, TextField,Button } from '@material-ui/core'
+import { Grid, Box, TextField,Button, Link } from '@material-ui/core'
 import calculator from '../utils/calculator.js'
 
 const Pesador = (props) => {
@@ -13,7 +13,6 @@ const Pesador = (props) => {
   const calcular = () => {
     if (peso <= 15000) {
       const data = calculator(tara? tara:0, peso, monedaFocus);
-      console.log(data)
       if (data) {
         const txt = data[0]
         const valor = data[1]
@@ -75,7 +74,8 @@ const Pesador = (props) => {
 
           <h3>${total}</h3>
           <h4>{resultado_count}</h4>
-          <h5> <a href="www.github.com/fkatv">Fkatv 2021 </a> </h5>
+          <h5> <Link href="https://www.github.com/fkatv" target="_blank" rel="noopener">
+          Fkatv 2021 </Link> </h5>
       </Box>
     </Grid>
   )

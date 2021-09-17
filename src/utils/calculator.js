@@ -25,22 +25,20 @@ const eAbsoluto = (v) => {
   return v - parseInt(v)
 }
 
-/** *
-  Verifica si el residuo entre las dos cantidades de monedas a
-  testear es menor al doble de la tolerancia para poder TARAR mejor.
-  vs 1.0.5
-*/
-const prueba_y_Error = (i,j,m1,m2,P) => {
-  const test = Math.abs(i*m1+j*m2 - P)
-  console.log(i,j, test)
-  if ( test < tolerancia*2) return true
-  else return false
-}
 
 /** *
   Según la tara, el peso de las monedas, y la Moneda a calcular,
   determina la cantidad y el valor de dichas monedas.
 */
+
+const y_cien = (peso, x) => {
+  return (1/7.58)*(peso - 9 * x)
+}
+
+const x_cien = (peso, y) => {
+  return (1/9)*(peso - 7.58 * y)
+}
+
 const calcularMonto = (tara, P, M) => {
 
   const m_nombre = monedas[M].nombre
@@ -62,46 +60,43 @@ const calcularMonto = (tara, P, M) => {
   else
     {
       // para las dos monedas de 100
-      const m100_antigua = monedas[4]
-      const m100_mapu = monedas[2]
-      return calcularSiHayDosTiposMoneda(P,_x,e_x,100,m100_mapu, m100_antigua);
+      const tol = 0.1
+      for (const i of Array(50).keys()) {
+        let x_ = x_cien(P,i)
+        let y_ = y_cien(P,i)
+        const err_y_ = eAbsoluto(y_)
+        const err_x_ = eAbsoluto(x_)
+
+        if(err_y_ > -tol && err_y_ < tol && y_>-1) {
+          return valorCien(i, -1, parseInt(y_), err_y_)
+        }
+        if(err_x_ > -tol && err_x_ < tol && x_>-1) {
+          return valorCien(parseInt(x_), err_x_, i, -1)
+        }
+      }
+      P = P + 0.1
+      // si no encuentra solución, aumentamos en 0.1 el peso entrante
+      for (const i of Array(25).keys()) {
+        let x_ = x_cien(P,i)
+        let y_ = y_cien(P,i)
+        const err_y_ = eAbsoluto(y_)
+        const err_x_ = eAbsoluto(x_)
+
+        if(err_y_ > -tol && err_y_ < tol && y_>-1) {return valorCien(i, -1, parseInt(y_), err_y_)}
+        if(err_x_ > -tol && err_x_ < tol && x_>-1) {return valorCien(parseInt(x_), err_x_, i, -1)}
+      }
+
+      alert("Sus monedas tienen scotchs o estan con peso extra / o su balanza está demasiado descalibrada")
+      return(['*Mala medición, recalibre',0])
+
+      //return calcularSiHayDosTiposMoneda(P,_x,e_x,100,m100_mapu, m100_antigua);
     }
     alert("Sus monedas tienen scotchs o estan con peso extra / o su balanza está demasiado descalibrada")
     return(['#Mala medición, recalibre', 0])
   }
 
-  /** *
-    Calcula la cantidad y el valor final de las monedas combinadas de un
-    valor único
-    vs 1.0.5
-  */
-  const calcularSiHayDosTiposMoneda = (P,_x,e_x,m_valor,moneda1,moneda2) => {
-    const mpeso1 = moneda1.peso
-    const mpeso2 = moneda2.peso
-    const _y = estimaMoneys(P, mpeso2)
-    const e_y = eAbsoluto(_y)
-
-    if (e_x === 0 || e_y === 0) {
-      if(-tolerancia <= e_x <= tolerancia){
-        return valorCondicionado(e_x, _x, m_valor, moneda1.nombre)
-      } else {
-        return valorCondicionado(e_y, _y, m_valor, moneda2.nombre)
-      }
-    } else {
-      console.log('entro a calcular los 100')
-      for (const i of Array(Math.ceil(_x)+1).keys()) {
-        for (const j of Array(Math.ceil(_y)+1).keys()) {
-          if (prueba_y_Error(i,j,mpeso1,mpeso2,P)){
-            return [`${i} moneda(s) nuevas y ${j} moneda(s) antiguas.`,calculaValor(i,j,100,100)]
-          }
-          if (prueba_y_Error(j,i,mpeso2,mpeso1,P)){
-            return [`${j} moneda(s) nuevas y ${i} moneda(s) antiguas.`,calculaValor(i,j,100,100)]
-          }
-        }
-      }
-      alert("Sus monedas tienen scotchs o estan con peso extra / o su balanza está demasiado descalibrada")
-      return(['*Mala medición, recalibre',0])
-    }
+  const valorCien = (x,ex,y,ey) => {
+     return [`${x} moneda(s) antiguas y ${y} moneda(s) nuevas.`,calculaValor(x,y,100,100)]
   }
 
   /** *
