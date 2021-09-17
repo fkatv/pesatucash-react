@@ -1,5 +1,7 @@
-#Pesa tu Cash
+# Pesa tu Cash
 
-Estimador de valor y cantidad de monedas pesadas en una balanza.
+Estimador de valor y cantidad de monedas chilenas pesadas en una balanza.
 
-### web: https://pesatucash.web.app
+#### Código OpenSource y libre de uso.
+
+### Web: https://pesatucash.web.app
