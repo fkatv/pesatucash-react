@@ -40,27 +40,56 @@ const x_cien = (peso, y) => {
 }
 
 const calcularMonto = (tara, P, M) => {
+  //verificación & transformación de unidades de medida
+  P = P < 2.9 ? P*1000 : P
+  tara = tara < 2.9 ? tara*1000 : tara
 
   const m_nombre = monedas[M].nombre
   const m_valor = monedas[M].valor
   const m_peso = monedas[M].peso
+
   P = Math.abs(P - tara)
+
   const _x = estimaMoneys(P, m_peso)
   const e_x = eAbsoluto(_x)
-
 
   if ( m_valor !== 100){
     if (e_x === 0 || -tolerancia <= e_x <= tolerancia) {
       return valorCondicionado(e_x,_x, m_valor, m_nombre)
     } else {
-        const txt = parseInt(_x) + " moneda(s)* de " + m_nombre
+        const txt = `${parseInt(_x)} moneda(s) de ${m_nombre}`
         return [txt , parseInt(_x) * m_valor ]
     }
   }
   else
     {
-      // para las dos monedas de 100
+      /*
+        Para las dos monedas de $100, la fórmula lineal es
+                        9*x + 7.58*y = Peso
+        se trabaja con el despeje de x e y, luego  se busca la aproximación
+        con el menor error, según una tolerancia de 0.1 .-
+      */
       const tol = 0.1
+      for (const i of Array(50).keys()) {
+        let x_ = x_cien(P,i)
+        let y_ = y_cien(P,i)
+        const err_y_ = eAbsoluto(y_)
+        const err_x_ = eAbsoluto(x_)
+
+3
+/8
+        let y_ = y_cien(P,i)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ̣̣̣̣̣̣̣̣̣ µ
+        if(err_y_ > -tol && err_y_ < tol && y_>-1) {
+          return valorCien(i, -1, parseInt(y_), err_y_)
+        }
+        if(err_x_ > -tol && err_x_ < tol && x_>-1) {
+          return valorCien(parseInt(x_), err_x_, i, -1)
+        }<<<<<<<<<<
+      }
+      P = P + 0.1
+      // si no se encuentra solución en 50 pasos,
+      // aumentamos en 0.1 el peso entrante ( efectividad > 90% )
       for (const i of Array(50).keys()) {
         let x_ = x_cien(P,i)
         let y_ = y_cien(P,i)
@@ -74,22 +103,9 @@ const calcularMonto = (tara, P, M) => {
           return valorCien(parseInt(x_), err_x_, i, -1)
         }
       }
-      P = P + 0.1
-      // si no encuentra solución, aumentamos en 0.1 el peso entrante
-      for (const i of Array(25).keys()) {
-        let x_ = x_cien(P,i)
-        let y_ = y_cien(P,i)
-        const err_y_ = eAbsoluto(y_)
-        const err_x_ = eAbsoluto(x_)
-
-        if(err_y_ > -tol && err_y_ < tol && y_>-1) {return valorCien(i, -1, parseInt(y_), err_y_)}
-        if(err_x_ > -tol && err_x_ < tol && x_>-1) {return valorCien(parseInt(x_), err_x_, i, -1)}
-      }
 
       alert("Sus monedas tienen scotchs o estan con peso extra / o su balanza está demasiado descalibrada")
       return(['*Mala medición, recalibre',0])
-
-      //return calcularSiHayDosTiposMoneda(P,_x,e_x,100,m100_mapu, m100_antigua);
     }
     alert("Sus monedas tienen scotchs o estan con peso extra / o su balanza está demasiado descalibrada")
     return(['#Mala medición, recalibre', 0])
